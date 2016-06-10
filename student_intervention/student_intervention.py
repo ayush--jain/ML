@@ -102,9 +102,9 @@ def train_classifier(clf, X_train, y_train):
     start = time()
     clf.fit(X_train, y_train)
     end = time()
-    
-    # Print the results
-    print "Trained model in {:.4f} seconds".format(end - start)
+
+    #return training time
+    return (end-start)
 
     
 def predict_labels(clf, features, target):
@@ -116,22 +116,25 @@ def predict_labels(clf, features, target):
     end = time()
     
     # Print and return results
-    print "Made predictions in {:.4f} seconds.".format(end - start)
-    return f1_score(target.values, y_pred, pos_label='yes')
+    #returns prediction time and f1 score
+    return ((end-start), f1_score(target.values, y_pred, pos_label='yes'))
 
 
 def train_predict(clf, X_train, y_train, X_test, y_test):
     ''' Train and predict using a classifer based on F1 score. '''
     
-    # Indicate the classifier and the training set size
-    print "Training a {} using a training set size of {}. . .".format(clf.__class__.__name__, len(X_train))
-    
     # Train the classifier
-    train_classifier(clf, X_train, y_train)
+    t1 = train_classifier(clf, X_train, y_train)
     
-    # Print the results of prediction for both training and testing
-    print "F1 score for training set: {:.4f}.".format(predict_labels(clf, X_train, y_train))
-    print "F1 score for test set: {:.4f}.".format(predict_labels(clf, X_test, y_test))
+    # results of prediction for training
+    (train_time, train_score) = predict_labels(clf, X_train, y_train)
+
+    #results of prediction for testing
+    (test_time, test_score) = predict_labels(clf, X_test, y_test)
+
+    #return (tranining time, training score, prediction time, testing score)
+    return (t1, train_score, test_time, test_score)
+
 
 
 #################################################################################
@@ -150,18 +153,40 @@ clf_A = tree.DecisionTreeClassifier(random_state=42)
 clf_B = GaussianNB()
 clf_C = svm.SVC()
 
-# Set up the training set sizes
-X_train_100 = 100
-y_train_100 = 100
+#testing for sizes 100, 200, 300
+models = [clf_A, clf_B, clf_C]
+sizes = [100,200,300]
 
-X_train_200 = 200
-y_train_200 = 200
+for clf in models:
+    # placeholders for the training results
+    num_train=[]
+    time_train=[]
+    time_test=[]
+    f1_train=[]
+    f1_test=[]
 
-X_train_300 = 300
-y_train_300 = 300
+    # print the name of each estimator
+    print clf.__class__.__name__
 
-# Execute the 'train_predict' function for each classifier and each training set size
-train_predict(clf_C, X_train.iloc[:X_train_300], y_train.iloc[:y_train_300], X_test, y_test)
+    # loop through training sizes and append results to placeholders
+    for n in sizes:
+        num_train.append(n)
+
+        # TODO: get results for training size n
+        (a,b,c,d) = train_predict(clf, X_train.iloc[:n], y_train[:n], X_test, y_test)
+
+        # TODO: append results to placeholders
+        time_train.append(a)
+        time_test.append(c)
+        f1_train.append(b)
+        f1_test.append(d) 
+
+    results = {'Training Size':sizes,'Training Time':time_train, 'Prediction Time':time_test, 'F1 Train':f1_train, 'F1 Test':f1_test}
+
+    df_table = pd.DataFrame(data = results, columns = ['Training Size','Training Time', 'Prediction Time','F1 Train','F1 Test'])
+
+    print df_table, "\n"
+
 
 
 ####################################################################
@@ -188,5 +213,10 @@ grid_obj = grid_obj.fit(X_train, y_train)
 clf = grid_obj.best_estimator_
 
 # Report the final F1 score for training and testing after parameter tuning
-print "Tuned model has a training F1 score of {:.4f}.".format(predict_labels(clf, X_train, y_train))
-print "Tuned model has a testing F1 score of {:.4f}.".format(predict_labels(clf, X_test, y_test))
+#f1 score for training data
+(a,b) = predict_labels(clf, X_train, y_train)
+print "Tuned model has a training F1 score of {:.4f}.".format(b)
+
+#f1 score for training data
+(a,b) = predict_labels(clf, X_test, y_test)
+print "Tuned model has a testing F1 score of {:.4f}.".format(b)
