@@ -89,7 +89,7 @@ num_train = 300
 num_test = X_all.shape[0] - num_train
 
 # Shuffle and split the dataset into the number of training and testing points above
-X_train, X_test, y_train, y_test  = cross_validation.train_test_split(X_all, y_all, test_size = 0.24)
+X_train, X_test, y_train, y_test  = cross_validation.train_test_split(X_all, y_all, test_size = 0.24, random_state = 42, stratify = y_all)
 
 
 ###############################################################################################
@@ -146,7 +146,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn import svm
 
 # Initialize the three models
-clf_A = tree.DecisionTreeClassifier()
+clf_A = tree.DecisionTreeClassifier(random_state=42)
 clf_B = GaussianNB()
 clf_C = svm.SVC()
 
@@ -175,11 +175,8 @@ parameters = {'gamma':[0.1, 0.5, 1, 10, 100], 'C':[1, 5, 10, 100, 1000]}
 # Initialize the classifier
 svr = svm.SVC()
 
-def score_func(y_test, pred):
-    return f1_score(y_test, pred, pos_label='yes')
-
 # Make an f1 scoring function using 'make_scorer' 
-f1_scorer = make_scorer(score_func)
+f1_scorer = make_scorer(f1_score, pos_label='yes')
 
 # Perform grid search on the classifier using the f1_scorer as the scoring method
 grid_obj = grid_search.GridSearchCV(svr, parameters, scoring=f1_scorer)
