@@ -1,0 +1,1 @@
+**HIT AND TRIAL METHOD OF FEATURE SELECTION**: A basic project for Machine learning. Reading the data in pandas dataframe and selecting features based on intuition and manual scanning of data. Used titanic survivor data.
