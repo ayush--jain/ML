@@ -1,4 +1,4 @@
-This is a collection of all the ML/AI projects I undertook in colllege. <br \> <br \> 
+### This is a collection of all the ML/AI projects I undertook in colllege. <br \> <br \> 
 
 **MANUAL PREDICTION**: Titanic project <br \>
 Predict the factors that could have lead to a survivor. <br \> <br \>
