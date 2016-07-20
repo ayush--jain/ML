@@ -3,8 +3,6 @@ import pandas as pd
 
 # RMS Titanic data visualization code 
 from titanic_visualizations import survival_stats
-from IPython.display import display
-#%matplotlib inline
 
 # Load the dataset
 in_file = 'titanic_data.csv'
@@ -26,6 +24,7 @@ def accuracy_score(truth, pred):
     else:
         return "Number of predictions does not match number of outcomes!"
     
+#######################################################################
 
 # def predictions_0(data):
 #     """ Model with no features. Always predicts a passenger did not survive. """
@@ -41,6 +40,8 @@ def accuracy_score(truth, pred):
 
 # # Make the predictions
 # predictions = predictions_0(data)
+
+#############################################################################
 
 # def predictions_1(data):
 #     """ Model with one feature: 
@@ -60,25 +61,56 @@ def accuracy_score(truth, pred):
 # # Make the predictions
 # predictions = predictions_1(data)
 
-def predictions_2(data):
-    """ Model with two features: 
-            - Predict a passenger survived if they are female.
-            - Predict a passenger survived if they are male and younger than 10. """
+###############################################################################
+
+# def predictions_2(data):
+#     """ Model with two features: 
+#             - Predict a passenger survived if they are female.
+#             - Predict a passenger survived if they are male and younger than 10. """
+    
+#     predictions = []
+#     for _, passenger in data.iterrows():       
+#         if passenger['Sex'] == 'female':
+#             predictions.append(1)
+#         else:
+#             if passenger['Age'] < 10:
+#                 predictions.append(1)
+#             else:
+#                 predictions.append(0)
+    
+#     # Return our predictions
+#     return pd.Series(predictions)
+
+# # Make the predictions
+# predictions = predictions_2(data)
+
+#print accuracy_score(outcomes, predictions)
+
+
+###########################################################################
+
+def predictions_3(data):
+    """ Model with multiple features. Makes a prediction with an accuracy of at least 80%. """
     
     predictions = []
     for _, passenger in data.iterrows():
-        
-        if ((passenger['Sex'] == 'female')) and ((passenger['Pclass'] > 2)):
-            predictions.append(1)
+        if passenger['Sex'] == 'female':
+            if passenger['Age'] > 40 and passenger['Age'] < 60 and passenger['Pclass'] == 3:
+                predictions.append(0)
+            else:
+                predictions.append(1)
         else:
-            predictions.append(0)
+            if passenger['Age'] <= 10:
+                predictions.append(1)
+            elif passenger['Pclass'] == 1 and passenger['Age'] <= 40:
+                predictions.append(1)
+            else:
+                predictions.append(0)
+        
     
     # Return our predictions
     return pd.Series(predictions)
 
 # Make the predictions
-predictions = predictions_2(data)
-
+predictions = predictions_3(data)
 print accuracy_score(outcomes, predictions)
-
-#survival_stats(data, outcomes, 'Sex')
